@@ -1,0 +1,19 @@
+{
+  "name": "alex3glez-aplicaci-n-todolist-react",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alex3glez/Alex3glez-Aplicaci-n-Todolist-React.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Alex3glez/Alex3glez-Aplicaci-n-Todolist-React/issues"
+  },
+  "homepage": "https://github.com/Alex3glez/Alex3glez-Aplicaci-n-Todolist-React#readme"
+}
