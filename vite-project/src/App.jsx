@@ -1,39 +1,134 @@
-import { useState } from 'react'
-import './App.css'
+import { useEffect, useState } from "react";
+import "./App.css";
+import { createUser, deleteToDo, deleteUser, getListData, getUserData, postToDo } from "./services/toDoServices";
+
 
 function App() {
-  const [lista, setLista] = useState([])
-  
-const añadirToDo=({target, key})=>{
-  if (key==="Enter" && target.value.trim()!=""){
-    setLista([...lista, target.value.trim()])
-    target.value=""
+    const [lista, setLista] = useState([]);
+  const [userList, setUserList] = useState([]);
+  const [userSelected, setUserSelected] = useState("");
+
+  useEffect(() => {
+    const comprobarDatos= async()=>{
+     const users= await getUserData(setUserList);
+
+      if (users.length > 0) {
+      const usuarioPredeterminado = users[0].name;
+      setUserSelected(usuarioPredeterminado);
+      getListData(setLista, usuarioPredeterminado);
+    } else {
+      alert("Aún no existen usuarios, crea uno");
     }
-}
+  };
+  comprobarDatos();
+}, []);
 
-const removeLi= (indexBorrar)=>{
-    setLista(lista.filter((nada, index)=>index!==indexBorrar))
-  }
+  const añadirToDo = async ({ target, key }) => {
+    if (key === "Enter" && target.value.trim() != "") {
+      await postToDo(target.value.trim(), userSelected);
+      getListData(setLista, userSelected);
+      target.value = "";
+    }
+  };
+
+  const removeLi = async (idBorrar) => {
+    await deleteToDo(idBorrar);
+    getListData(setLista, userSelected);
+  };
+
+  const selectUser = ({ target }) => {
+    setUserSelected(target.value);
+    getListData(setLista, target.value);
+  };
+
+  const crearUsuario = async ({ target, key }) => {
+    if (key === "Enter" && target.value.trim() != "") {
+      await createUser(target.value.trim());
+      await getUserData(setUserList);
+      getListData(setLista, target.value.trim());
+      setUserSelected(target.value.trim());
+      target.value = "";
+    }
+  };
+
+  const borrarUsuario = async ({ target, key }) => {
+    if (key === "Enter" && target.value.trim() != "") {
+      await deleteUser(target.value.trim());
+      await getUserData(setUserList);
+      const nuevoUsuario = userList[0].name || "";
+      setUserSelected(nuevoUsuario);
+      getListData(setLista, nuevoUsuario);
+      target.value = "";
+    }
+  };
+
   return (
-    <div className='d-flex justify-content-center align-items-center vh-100'>
-    <div className='text-center h-50 col-10 col-md-6 bg-secondary bg-gradient  rounded'>
-      <h1 className='m-2'>Lista de tareas</h1>
-      <div className='d-flex justify-content-center align-items-center'>{lista.length===0 && <div className="alert alert-warning w-75" role="alert">
-  No hay tareas, añadir tareas
-</div>}</div>
-      <div className='col-10 col-sm-8 col-md-6 mx-auto my-3'>
-    <input onKeyDown={añadirToDo} type="text" className="form-control text-center mb-2" placeholder="Añade algo que hacer" aria-label="Username" aria-describedby="visible-addon"/>
-      <ul className="list-group">
-        {lista.map((toDo, index)=>(
-          <li className="list-group-item list-group-item-action d-flex justify-content-between" key={index}>{toDo} <button onClick={()=>removeLi(index)} type="button" className="btn-close" aria-label="Close"></button></li>)
-        )}
-      </ul>
+    <>
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div className="container-fluid">
+          <h2 className="text-light">Espia de lista de tareas</h2>
+          <div className="text-light">
+            <h4>Crear usuario</h4>
+            <input onKeyDown={crearUsuario} type="text" />
+          </div>
+          <div className="text-light">
+            <h4>Borrar usuario</h4>
+            <input onKeyDown={borrarUsuario} type="text" />
+          </div>
+          <div>
+            <h4 className="text-light">Selecciona lista</h4>
+            <select onChange={selectUser} name="usuarios" id="usuarios" value={userSelected}>
+              {userList.map((user) => (
+                <option key={user.id} value={user.name}>
+                  {user.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </nav>
+
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="text-center h-50 col-10 col-md-6 bg-secondary bg-gradient  rounded">
+          <h1 className="m-2">Lista de {userSelected}</h1>
+          <div className="d-flex justify-content-center align-items-center">
+            {lista.length === 0 && (
+              <div className="alert alert-warning w-75" role="alert">
+                No hay tareas, añadir tareas
+              </div>
+            )}
+          </div>
+          <div className="col-10 col-sm-8 col-md-6 mx-auto my-3">
+            <input
+              onKeyDown={añadirToDo}
+              type="text"
+              className="form-control text-center mb-2"
+              placeholder="Añade algo que hacer"
+              aria-label="Username"
+              aria-describedby="visible-addon"
+            />
+            <ul className="list-group">
+              {lista.map((toDo) => (
+                <li
+                  className="list-group-item list-group-item-action d-flex justify-content-between"
+                  key={toDo.id}
+                >
+                  {toDo.label}{" "}
+                  <button
+                    onClick={() => removeLi(toDo.id)}
+                    type="button"
+                    className="btn-close"
+                    aria-label="Close"
+                  ></button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
-
-    </div>
-
-    </div>
-  )
+    </>
+  );
+  
 }
 
-export default App
+export default App;
