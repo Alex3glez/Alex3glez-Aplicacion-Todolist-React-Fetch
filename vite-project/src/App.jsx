@@ -60,7 +60,26 @@ function App() {
       getListData(setLista, nuevoUsuario);
       target.value = "";
     }
+
   };
+
+  const borrarTodo= async()=>{
+    try {
+       for (let index = 0; index < lista.length; index++) {
+      await deleteToDo(lista[index].id);
+      
+    }
+    await getListData(setLista, userSelected)
+      
+    } catch (error) { console.log(error);
+    
+      
+    }
+    }
+   
+  
+  console.log(lista);
+  
 
   return (
     <>
@@ -123,6 +142,8 @@ function App() {
                 </li>
               ))}
             </ul>
+            <button title="¡CUIDADO! borra toda la lista"  className="m-2" onClick={borrarTodo}>Botón Nucelar</button>
+           
           </div>
         </div>
       </div>
