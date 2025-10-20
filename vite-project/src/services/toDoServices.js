@@ -12,8 +12,11 @@ export const createUser = async (user) => {
         body:""
       }
     );
-  } catch (error) {
-    console.log(error);
+    if (!createPostToDo.ok) {
+      throw new Error("El usuario ya esta creado")
+    }
+  } catch (error) { throw error;
+  
   }
 };
 
@@ -28,6 +31,7 @@ export const deleteToDo = async (id) => {
       
     });
 
+
   } catch (error) {
     console.error(error);
   }
@@ -39,8 +43,11 @@ export const deleteUser= async(user)=>{
             method: "DELETE",
             headers: {'accept': 'application/json'}}
         )
-        
-    } catch (error) {console.log(error);
+       if (!response.ok) {
+        throw new Error("El usuario no existe")
+       } 
+
+    } catch (error) {throw error;
     
         
     }

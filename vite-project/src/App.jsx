@@ -41,7 +41,7 @@ function App() {
     getListData(setLista, target.value);
   };
 
-  const crearUsuario = async ({ target, key }) => {
+/*   const crearUsuario = async ({ target, key }) => {
     if (key === "Enter" && target.value.trim() != "") {
       await createUser(target.value.trim());
       await getUserData(setUserList);
@@ -49,9 +49,31 @@ function App() {
       setUserSelected(target.value.trim());
       target.value = "";
     }
+  }; //esta función era para el onKeyDown del input antes de hacer el form */
+
+  const createUsuario = async (e) => {
+    try {
+      /*  for (let index = 0; index < userList.length; index++) {
+        if (userList[index].name==e.target[0].value) {
+          return alert("Ese usuario ya existe")
+        }
+      }  */
+      
+      e.preventDefault()
+      await createUser(e.target[0].value.trim());
+      await getUserData(setUserList);
+      getListData(setLista, e.target[0].value.trim());
+      setUserSelected(e.target[0].value.trim());
+      e.target[0].value = "";
+      e.target[1].checked=false;
+    } catch (error) {alert(error);
+    
+      
+    }
+    
   };
 
-  const borrarUsuario = async ({ target, key }) => {
+  /* const borrarUsuario = async ({ target, key }) => {
     if (key === "Enter" && target.value.trim() != "") {
       await deleteUser(target.value.trim());
       await getUserData(setUserList);
@@ -61,7 +83,27 @@ function App() {
       target.value = "";
     }
 
+  }; //esta función era para el onKeyDown del input antes de hacer el form*/
+
+   const deleteUsuario = async (e) => {
+    try {
+       e.preventDefault()
+      await deleteUser(e.target[0].value.trim());
+      await getUserData(setUserList);
+      const nuevoUsuario = userList[0].name || "";
+      setUserSelected(nuevoUsuario);
+      getListData(setLista, nuevoUsuario);
+      e.target[0].value = "";
+      e.target[1].checked=false;
+    } catch (error) {alert(error);
+    
+      
+    }
+    
+
   };
+
+
 
   const borrarTodo= async()=>{
     try {
@@ -76,9 +118,6 @@ function App() {
       
     }
     }
-   
-  
-  console.log(lista);
   
 
   return (
@@ -87,12 +126,24 @@ function App() {
         <div className="container-fluid">
           <h2 className="text-light">Espia de lista de tareas</h2>
           <div className="text-light">
-            <h4>Crear usuario</h4>
-            <input onKeyDown={crearUsuario} type="text" />
+            
+            <form onSubmit={createUsuario}>
+              <h4 className="mb-2">Crear usuario</h4>
+            <input className="mb-2" name="creacion-usuario" type="text" required /> <br />
+            <label className="mb-2" htmlFor="acept">Aceptar condiciones</label>
+            <input className="m-2" type="checkbox"  id="acept" required /> <br />
+            <button className="mb-2" type="submit">Crear usuario</button>
+            </form>
           </div>
           <div className="text-light">
-            <h4>Borrar usuario</h4>
-            <input onKeyDown={borrarUsuario} type="text" />
+            
+            <form onSubmit={deleteUsuario}>
+              <h4 className="mb-2">Borrar usuario</h4>
+            <input className="mb-2" name="borrar-usuario" type="text" required/> <br />
+            <label className="mb-2" htmlFor="ensure">Estoy seguro</label>
+            <input className="m-2" type="checkbox"  id="ensure" required /> <br />
+            <button className="mb-2" type="submit">Borrar usuario</button>
+            </form>
           </div>
           <div>
             <h4 className="text-light">Selecciona lista</h4>
